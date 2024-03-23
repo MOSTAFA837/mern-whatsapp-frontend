@@ -20,14 +20,17 @@ function App() {
           <Route
             path="/"
             element={token ? <Home /> : <Navigate to="/login" />}
+            // element={<Home />}
           />
           <Route
             path="/register"
             element={!token ? <Register /> : <Navigate to="/" />}
+            // element={<Register />}
           />
           <Route
             path="/login"
             element={!token ? <Login /> : <Navigate to="/" />}
+            // element={<Login />}
           />
         </Routes>
       </Router>

@@ -54,7 +54,7 @@ export const userSlice = createSlice({
       state.error = "";
       state.user = {
         id: "",
-        name: "mostafa magdy",
+        name: "",
         email: "",
         picture: "",
         status: "",
