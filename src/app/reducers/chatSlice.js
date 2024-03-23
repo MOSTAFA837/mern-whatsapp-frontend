@@ -2,12 +2,14 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const CONVERSATION_ENDPOINT = `${process.env.REACT_APP_API_ENDPOINT}/conversation`;
+const MESSAGE_ENDPOINT = `${process.env.REACT_APP_API_ENDPOINT}/message`;
 
 const initialState = {
   status: "",
   error: "",
   conversations: [],
   activeConversation: {},
+  messages: [],
   notifications: [],
 };
 
@@ -37,6 +39,48 @@ export const open_create_conversation = createAsyncThunk(
       const { data } = await axios.post(
         CONVERSATION_ENDPOINT,
         { receiver_id },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.error.message);
+    }
+  }
+);
+
+export const getConversationMessages = createAsyncThunk(
+  "conervsation/messages",
+  async (values, { rejectWithValue }) => {
+    const { token, convo_id } = values;
+    try {
+      const { data } = await axios.get(`${MESSAGE_ENDPOINT}/${convo_id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.error.message);
+    }
+  }
+);
+
+export const sendMessage = createAsyncThunk(
+  "message/send",
+  async (values, { rejectWithValue }) => {
+    const { token, message, convo_id, files } = values;
+    try {
+      const { data } = await axios.post(
+        MESSAGE_ENDPOINT,
+        {
+          message,
+          convo_id,
+          files,
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`,
