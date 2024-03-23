@@ -1,11 +1,26 @@
 import { AttachmentIcon } from "../../../svg";
 
-export default function Attachments() {
+import Menu from "./Menu.jsx";
+
+export default function Attachments({
+  showAttachments,
+  setShowAttachments,
+  setShowPicker,
+}) {
   return (
     <li className="relative">
-      <button className="btn">
+      <button
+        onClick={() => {
+          setShowPicker(false);
+          setShowAttachments((prev) => !prev);
+        }}
+        type="button"
+        className="btn"
+      >
         <AttachmentIcon className="dark:fill-dark_svg_1" />
       </button>
+      {/*Menu*/}
+      {showAttachments ? <Menu /> : null}
     </li>
   );
 }

@@ -1,12 +1,12 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ClipLoader } from "react-spinners";
 
 import { sendMessage } from "../../../app/reducers/chatSlice.js";
 import { SendIcon } from "../../../svg/index.js";
 import Attachments from "./Attachments.jsx";
-import EmojiPicker from "./EmojiPicker.jsx";
 import Input from "./Input.jsx";
+import EmojiPickerApp from "./EmojiPicker.jsx";
 
 export default function ChatActions() {
   const dispatch = useDispatch();
@@ -14,7 +14,12 @@ export default function ChatActions() {
   const { user } = useSelector((state) => state.user);
   const { token } = user;
 
+  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [showPicker, setShowPicker] = useState(false);
+  const [showAttachments, setShowAttachments] = useState(false);
+
+  const textRef = useRef();
 
   const values = {
     message,
@@ -22,10 +27,13 @@ export default function ChatActions() {
     files: [],
     token,
   };
+
   const SendMessageHandler = async (e) => {
     e.preventDefault();
+    setLoading(true);
     await dispatch(sendMessage(values));
     setMessage("");
+    setLoading(false);
   };
   return (
     <form
@@ -36,14 +44,26 @@ export default function ChatActions() {
       <div className="w-full flex items-center gap-x-2">
         {/*Emojis and attachpments*/}
         <ul className="flex gap-x-2">
-          <EmojiPicker />
-          <Attachments />
+          <EmojiPickerApp
+            textRef={textRef}
+            message={message}
+            setMessage={setMessage}
+            showPicker={showPicker}
+            setShowPicker={setShowPicker}
+            setShowAttachments={setShowAttachments}
+          />
+
+          <Attachments
+            showAttachments={showAttachments}
+            setShowAttachments={setShowAttachments}
+            setShowPicker={setShowPicker}
+          />
         </ul>
         {/*Input*/}
-        <Input message={message} setMessage={setMessage} />
+        <Input textRef={textRef} message={message} setMessage={setMessage} />
         {/*Send button*/}
         <button type="submit" className="btn">
-          {status === "loading" ? (
+          {status === "loading" && loading ? (
             <ClipLoader color="#E9EDEF" size={25} />
           ) : (
             <SendIcon className="dark:fill-dark_svg_1" />
